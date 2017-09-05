@@ -32,3 +32,16 @@ body, .form-control{
     width: 80px !important;
 }
 
+
+/* SCHEDULER */
+.fc-content {
+  font-size: 1.5em;
+}
+
+.fc-slats > table >tbody > tr {
+height: 25px;
+}
+
+.fc-unthemed td.fc-today {
+	background: #ffffff !important;
+}
