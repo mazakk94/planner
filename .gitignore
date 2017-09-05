@@ -45,3 +45,5 @@ Thumbs.db
 
 # executive
 *.jar
+src/main/resources/static/js/app/EventService2.js
+.vscode/settings.json
