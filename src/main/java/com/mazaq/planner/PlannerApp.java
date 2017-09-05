@@ -15,3 +15,4 @@ public class PlannerApp {
 		SpringApplication.run(PlannerApp.class, args);
 	}
 }
+
