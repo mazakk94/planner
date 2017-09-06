@@ -38,7 +38,7 @@
             <input id="required-input" type="text" name="firstname" id="firstname" placeholder="John" />
           </div>
 
-<button type="button" class="btn btn-primary btn-save" id="add">Add</button>
+          <button type="button" class="btn btn-primary btn-save" id="add">Add</button>
 
 
 	        <div class="row">
