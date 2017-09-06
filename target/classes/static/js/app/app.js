@@ -5,12 +5,12 @@ app.constant('urls', {
     ROOM_SERVICE_API : 'http://localhost:8080/PlannerApp/api/room/',
     EVENT_SERVICE_API : 'http://localhost:8080/PlannerApp/api/event/'
 });
-
 // app.constant('urls', {
 //     BASE: 'http://powerful-brook-93779.herokuapp.com/PlannerApp',
 //     USER_SERVICE_API : 'http://powerful-brook-93779.herokuapp.com/PlannerApp/api/user/',
 //     EVENT_SERVICE_API : 'http://powerful-brook-93779.herokuapp.com/PlannerApp/api/event/'
 // });
+
 
 app.config(['$stateProvider', '$urlRouterProvider',
     function($stateProvider, $urlRouterProvider) {

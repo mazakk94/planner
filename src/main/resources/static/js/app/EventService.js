@@ -283,7 +283,7 @@ angular.module('crudApp').factory('EventService',
             // alert('Clicked on: ' + date.format());
             // alert('Current view: ' + view.name);
             // alert('ROOM: ' + resourceObj.id);
-
+            date.format();
             var prawda = false;
           },
 
