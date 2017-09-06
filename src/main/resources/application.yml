@@ -22,15 +22,15 @@ datasource:
 spring:
   profiles: prod
 datasource:
-  sampleapp:   
-    url: jdbc:postgresql://localhost:5432/postgresql-sinuous-25676
-    username:
-    password:
-    driverClassName: org.postgresql.Driver
+  sampleapp:
+    url: jdbc:mysql://s50.hekko.net.pl:3306/eagmar_mazaq
+    username: eagmar_root
+    password: root
+    driverClassName: com.mysql.jdbc.Driver
     defaultSchema:
     maxPoolSize: 20
     hibernate:
       hbm2ddl.method: update
       show_sql: true
       format_sql: true
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+      dialect: org.hibernate.dialect.MySQLDialect
