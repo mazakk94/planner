@@ -283,6 +283,8 @@ angular.module('crudApp').factory('EventService',
             // alert('Clicked on: ' + date.format());
             // alert('Current view: ' + view.name);
             // alert('ROOM: ' + resourceObj.id);
+
+            var prawda = false;
           },
 
           eventClick: function(calEvent, jsEvent, view) {
