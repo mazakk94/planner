@@ -1,9 +1,9 @@
 var app = angular.module('crudApp',['ui.router','ngStorage']);
 
 app.constant('urls', {
-    BASE: 'http://localhost:8080/PlannerApp',
-    USER_SERVICE_API : 'http://localhost:8080/PlannerApp/api/user/',
-    EVENT_SERVICE_API : 'http://localhost:8080/PlannerApp/api/event/'
+    BASE: 'https://powerful-brook-93779.herokuapp.com/PlannerApp',
+    USER_SERVICE_API : 'https://powerful-brook-93779.herokuapp.com/PlannerApp/api/user/',
+    EVENT_SERVICE_API : 'https://powerful-brook-93779.herokuapp.com/PlannerApp/api/event/'
 });
 
 app.config(['$stateProvider', '$urlRouterProvider',
