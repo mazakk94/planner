@@ -25,14 +25,14 @@
         <script src="js/app/EventController.js"></script>
         <div ui-view></div>
 
-        <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js" ie.="" data-type=""></script>
+        <#--  <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js" ie.="" data-type=""></script>
         <script type="text/javascript" src="//code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
         <link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css">
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.js "></script>
         <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">  -->
 
 
 
