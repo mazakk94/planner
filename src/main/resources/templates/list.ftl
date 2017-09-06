@@ -33,6 +33,13 @@
 	        </div>
 
 					<div id='calendar'></div>
+          <div class="cont" style="display:none">
+            <button type="button" class="btn btn-primary btn-save" id="edit">Save</button>
+            <input id="required-input" type="text" name="firstname" id="firstname" placeholder="John" />
+          </div>
+
+<button type="button" class="btn btn-primary btn-save" id="add">Add</button>
+
 
 	        <div class="row">
 	          <div class="form-group col-md-12">

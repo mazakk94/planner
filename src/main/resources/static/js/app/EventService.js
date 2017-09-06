@@ -90,211 +90,285 @@ angular.module('crudApp').factory('EventService',
       function getAllEvents(){
         $('#calendar').fullCalendar({
           schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
-          defaultView: 'agendaDay',
-          // defaultEventMinutes: 45,
-          // businessHours: true,
-          minTime: '08:00:00',
-          maxTime: '18:00:00',
-          slotDuration: '00:15:00',
-          allDaySlot: false,
-          eventResizeStop: function( event, jsEvent, ui, view ) {   
-            var diffMs = null;
-            var diffMins = null;
-            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-              diffMs = (event.end.time() - event.start.time());
-              diffMins = Math.round((diffMs % 86400000) / 60000); // minutes
-            }
-            // var diffMs = (event.end.time() - event.start.time());
-            var falsz = true;
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
           },
-          eventSources: [
-            {
-              events : $localStorage.events,
-              // events: [
-              //   { 
-              //     resourceId: 'a',
-              //     title  : 'event1',
-              //     start  : '2017-09-01'
-
-              //   },
-              //   {
-              //     resourceId: 'b',
-              //     title  : 'event2',
-              //     start  : '2017-09-01',
-              //     end  : '2017-09-05'
-              //   },
-              //   {
-              //     resourceId: 'c',
-              //     title  : 'event3',
-              //     start  : '2017-09-01T12:30:00',
-              //   }
-              // ],
-
-              // dayClick: function() {
-              //   alert('a day has been clicked!');
-              // },  
-
-              color: '#3399ff',
-              // textColor: 'yellow',
-              editable: true
+          defaultDate: '2014-11-12',
+          editable: true,
+          eventLimit: true, // allow "more" link when too many events
+          defaultView: 'agendaDay',
+          selectable: true, //permite sa selectezi mai multe zile
+          selectHelper: true, //coloreaza selctia ta
+          eventClick: function(event, jsEvent, view) {
+            $(".cont").show().data('event', event);
+          },
+          select: function(start, end, allDay) {
+      
+            var title = "test"
+            if (title) {
+              calendar.fullCalendar('renderEvent', {
+                  title: title,
+                  start: start,
+                  end: end,
+                  //allDay: allDay
+                },
+      
+                true // make the event "stick"
+              );
+            }
+      
+      
+            calendar.fullCalendar('unselect');
+          },
+      
+          events: [{
+              title: 'titleEvent',
+              start: '2014-11-12',
+              allDay: false // will make the time show
             },
-          ],
+      
+          ]
+        });
+        $("#edit").click(function(e) {
+          e.preventDefault();
+      
+          var title = $("#required-input").val().trim();
+          if (!title) {
+            return;
+          }
+          var event = $(".cont").data('event'),
+            isAdd = !event;
+          if (isAdd) {
+            event = {};
+            event.start = '2014-11-12';
+          }
+          event.title = title;
+          if (isAdd) {
+            $('#calendar').fullCalendar('renderEvent', event, true);
+          } else {
+            $('#calendar').fullCalendar('updateEvent', event);
+          }
+          $(".cont").hide().removeData('event');
+        });
+      
+        $("#add").click(function(e) {
+          $(".cont").show();
+        });
+      // }
 
-          // eventResize: function(event, delta, revertFunc) {
+
+
+
+
+
+
+          // defaultView: 'agendaDay',
+          // // defaultEventMinutes: 45,
+          // // businessHours: true,
+          // minTime: '08:00:00',
+          // maxTime: '18:00:00',
+          // slotDuration: '00:15:00',
+          // allDaySlot: false,
+          // eventResizeStop: function( event, jsEvent, ui, view ) {   
+          //   var diffMs = null;
+          //   var diffMins = null;
+          //   if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+          //     diffMs = (event.end.time() - event.start.time());
+          //     diffMins = Math.round((diffMs % 86400000) / 60000); // minutes
+          //   }
+          //   // var diffMs = (event.end.time() - event.start.time());
+          //   var falsz = true;
+          // },
+          // eventSources: [
+          //   {
+          //     events : $localStorage.events,
+          //     // events: [
+          //     //   { 
+          //     //     resourceId: 'a',
+          //     //     title  : 'event1',
+          //     //     start  : '2017-09-01'
+
+          //     //   },
+          //     //   {
+          //     //     resourceId: 'b',
+          //     //     title  : 'event2',
+          //     //     start  : '2017-09-01',
+          //     //     end  : '2017-09-05'
+          //     //   },
+          //     //   {
+          //     //     resourceId: 'c',
+          //     //     title  : 'event3',
+          //     //     start  : '2017-09-01T12:30:00',
+          //     //   }
+          //     // ],
+
+          //     // dayClick: function() {
+          //     //   alert('a day has been clicked!');
+          //     // },  
+
+          //     color: '#3399ff',
+          //     // textColor: 'yellow',
+          //     editable: true
+          //   },
+          // ],
+
+          // // eventResize: function(event, delta, revertFunc) {
             
-            // // var diffMs = (event.end.time() - event.start.time());
-            // var diffMs = null;
-            // if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-            //   var diffMs = (event.end.time() - event.start.time()) / 60000;
-            // }
-            // // var diffMs = (event.end.format() - event.start.format());
-            // // alert(event.title + " end is now " + event.end.format());
-            // // var endtime = event.end.format();            
+          //   // // var diffMs = (event.end.time() - event.start.time());
+          //   // var diffMs = null;
+          //   // if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+          //   //   var diffMs = (event.end.time() - event.start.time()) / 60000;
+          //   // }
+          //   // // var diffMs = (event.end.format() - event.start.format());
+          //   // // alert(event.title + " end is now " + event.end.format());
+          //   // // var endtime = event.end.format();            
             
-            // var falsz = true;
+          //   // var falsz = true;
                            
 
-            // if (diffMs !== null && diffMs > 120) {
-            //   if (confirm("is 120 okay rather than " + diffMs + "?")) {
-            //     // event.end = new Date(event.start + 120);
-            //     event.end = moment(new Date(event.start + (120 * 60000)));
-            //     event.rendering = 'background';
-            //     // new Date(tempDate.setHours(tempDate.getHours()+1)); 
+          //   // if (diffMs !== null && diffMs > 120) {
+          //   //   if (confirm("is 120 okay rather than " + diffMs + "?")) {
+          //   //     // event.end = new Date(event.start + 120);
+          //   //     event.end = moment(new Date(event.start + (120 * 60000)));
+          //   //     event.rendering = 'background';
+          //   //     // new Date(tempDate.setHours(tempDate.getHours()+1)); 
 
-            //     // $('#calendar').fullCalendar('updateEvent', event);
+          //   //     // $('#calendar').fullCalendar('updateEvent', event);
                 
-            //     falsz = true;
-            //     // revertFunc();
-            //     // $('#calendar').fullCalendar( 'refetchEventSources', eventSources );
+          //   //     falsz = true;
+          //   //     // revertFunc();
+          //   //     // $('#calendar').fullCalendar( 'refetchEventSources', eventSources );
 
-            //     updateEvent(event, event.id);
-            //     return;
-            //     // $('#calendar').fullCalendar( 'rerenderEvents' );
-            //     // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
-            //     // $('#calendar').fullCalendar( 'refetchEvents' );
-            //     // rerenderEvents();
-            //     falsz = true;                
-            //   } else {
-            //     revertFunc();
-            //   }              
-            // }
+          //   //     updateEvent(event, event.id);
+          //   //     return;
+          //   //     // $('#calendar').fullCalendar( 'rerenderEvents' );
+          //   //     // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
+          //   //     // $('#calendar').fullCalendar( 'refetchEvents' );
+          //   //     // rerenderEvents();
+          //   //     falsz = true;                
+          //   //   } else {
+          //   //     revertFunc();
+          //   //   }              
+          //   // }
 
-            // if (diffMs !== null) {
-            //   updateEvent(event, event.id);            
-            // } 
-            // // event
+          //   // if (diffMs !== null) {
+          //   //   updateEvent(event, event.id);            
+          //   // } 
+          //   // // event
+          // // },
+
+          // eventRender: function( event, element, view ) {
+          //   if(event.changing){ // If this event is being changed, grab its render date
+          //     $("#currenttime").html("Start: "+event.start.format("YYYY-MM-DD hh:mma")+"<br> End: "+event.end.format("YYYY-MM-DD hh:mma"));
+          //     // alert('event length: ' + (event.start - event.end).format("YYYY-MM-DD hh:mma"));
+          //   }
           // },
-
-          eventRender: function( event, element, view ) {
-            if(event.changing){ // If this event is being changed, grab its render date
-              $("#currenttime").html("Start: "+event.start.format("YYYY-MM-DD hh:mma")+"<br> End: "+event.end.format("YYYY-MM-DD hh:mma"));
-              // alert('event length: ' + (event.start - event.end).format("YYYY-MM-DD hh:mma"));
-            }
-          },
-          eventResizeStart: function(event, jsEvent, ui, view ){
-            // alert('event end: ' + event.end.format("YYYY-MM-DD hh:mma"));
-            event.changing = true; // Event is being changed
+          // eventResizeStart: function(event, jsEvent, ui, view ){
+          //   // alert('event end: ' + event.end.format("YYYY-MM-DD hh:mma"));
+          //   event.changing = true; // Event is being changed
              
-            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-              var millisDuration = event.end.time() - event.start.time();            
-              var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
-              if (minutesDuration > 120) {
-                revertFunc();
-              }
-            }
+          //   if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+          //     var millisDuration = event.end.time() - event.start.time();            
+          //     var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
+          //     if (minutesDuration > 120) {
+          //       revertFunc();
+          //     }
+          //   }
           
-            var falsz = true;
-          },
-          eventOverlap: false,
-          eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) { 
+          //   var falsz = true;
+          // },
+          // eventOverlap: false,
+          // eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) { 
 
-            // var diffMs = (event.end.time() - event.start.time());
-            var diffMs = null;
-            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-              var diffMs = (event.end.time() - event.start.time()) / 60000;
-            }
-            // var diffMs = (event.end.format() - event.start.format());
-            // alert(event.title + " end is now " + event.end.format());
-            // var endtime = event.end.format();            
+          //   // var diffMs = (event.end.time() - event.start.time());
+          //   var diffMs = null;
+          //   if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+          //     var diffMs = (event.end.time() - event.start.time()) / 60000;
+          //   }
+          //   // var diffMs = (event.end.format() - event.start.format());
+          //   // alert(event.title + " end is now " + event.end.format());
+          //   // var endtime = event.end.format();            
             
-            var falsz = true;
+          //   var falsz = true;
                           
 
-            if (diffMs !== null && diffMs > 120) {
-              if (confirm("is 120 okay rather than " + diffMs + "?")) {
-                // event.end = new Date(event.start + 120);
-                event.end = moment(new Date(event.start + (120 * 60000)));
-                event.rendering = 'background';
-                // new Date(tempDate.setHours(tempDate.getHours()+1)); 
+          //   if (diffMs !== null && diffMs > 120) {
+          //     if (confirm("is 120 okay rather than " + diffMs + "?")) {
+          //       // event.end = new Date(event.start + 120);
+          //       event.end = moment(new Date(event.start + (120 * 60000)));
+          //       event.rendering = 'background';
+          //       // new Date(tempDate.setHours(tempDate.getHours()+1)); 
 
-                // $('#calendar').fullCalendar('updateEvent', event);
+          //       // $('#calendar').fullCalendar('updateEvent', event);
                 
-                falsz = true;
-                // revertFunc();
-                // $('#calendar').fullCalendar( 'refetchEventSources', eventSources );
+          //       falsz = true;
+          //       // revertFunc();
+          //       // $('#calendar').fullCalendar( 'refetchEventSources', eventSources );
 
-                updateEvent(event, event.id);
-                return;
-                // $('#calendar').fullCalendar( 'rerenderEvents' );
-                // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
-                // $('#calendar').fullCalendar( 'refetchEvents' );
-                // rerenderEvents();
-                falsz = true;                
-              } else {
-                revertFunc();
-              }              
-            }
+          //       updateEvent(event, event.id);
+          //       return;
+          //       // $('#calendar').fullCalendar( 'rerenderEvents' );
+          //       // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
+          //       // $('#calendar').fullCalendar( 'refetchEvents' );
+          //       // rerenderEvents();
+          //       falsz = true;                
+          //     } else {
+          //       revertFunc();
+          //     }              
+          //   }
 
-            if (diffMs !== null) {
-              updateEvent(event, event.id);            
-            } 
-            // event
+          //   if (diffMs !== null) {
+          //     updateEvent(event, event.id);            
+          //   } 
+          //   // event
 
 
-            event.changing = true; // Event is being changed
+          //   event.changing = true; // Event is being changed
             
-             if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-               var millisDuration = event.end.time() - event.start.time();            
-               var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
-               if (minutesDuration > 120) {
-                 revertFunc();
-               }
-             }
-          },
-          eventResizeEnd: function(event, jsEvent, ui, view ){
-            event.changing = false; // Event is finished being changed
+          //    if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+          //      var millisDuration = event.end.time() - event.start.time();            
+          //      var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
+          //      if (minutesDuration > 120) {
+          //        revertFunc();
+          //      }
+          //    }
+          // },
+          // eventResizeEnd: function(event, jsEvent, ui, view ){
+          //   event.changing = false; // Event is finished being changed
             
-            var millisDuration = event.end.time() - event.start.time();            
-            var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
-            var falsz = true;
-          },
-          eventDrop: function( event, delta, revertFunc, jsEvent, ui, view ) {
-            updateEvent(event, event.id); 
-          },
-          // eventDragStart: function(event, jsEvent, ui, view ){
-          //   event.changing = true;
+          //   var millisDuration = event.end.time() - event.start.time();            
+          //   var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
+          //   var falsz = true;
           // },
-          // eventDragEnd: function(event, jsEvent, ui, view ){
-          //   event.changing = false;
+          // eventDrop: function( event, delta, revertFunc, jsEvent, ui, view ) {
+          //   updateEvent(event, event.id); 
+          // },
+          // // eventDragStart: function(event, jsEvent, ui, view ){
+          // //   event.changing = true;
+          // // },
+          // // eventDragEnd: function(event, jsEvent, ui, view ){
+          // //   event.changing = false;
+          // // },
+
+          // dayClick: function(date, jsEvent, view, resourceObj) {            
+          //   // alert('Clicked on: ' + date.format());         
+          //   // alert('Clicked on: ' + date.format());
+          //   // alert('Current view: ' + view.name);
+          //   // alert('ROOM: ' + resourceObj.id);
+          //   date.format();
+          //   var prawda = false;
           // },
 
-          dayClick: function(date, jsEvent, view, resourceObj) {            
-            // alert('Clicked on: ' + date.format());         
-            // alert('Clicked on: ' + date.format());
-            // alert('Current view: ' + view.name);
-            // alert('ROOM: ' + resourceObj.id);
-            date.format();
-            var prawda = false;
-          },
-
-          eventClick: function(calEvent, jsEvent, view) {
-            // alert('Event: ' + calEvent.title);
-            // alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-            // alert('View: ' + view.name);
-            // alert('start: ' + view.start.time());
-            // alert('end: ' + view.end.time());
-          },            
-          resources: $localStorage.rooms
+          // eventClick: function(calEvent, jsEvent, view) {
+          //   // alert('Event: ' + calEvent.title);
+          //   // alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+          //   // alert('View: ' + view.name);
+          //   // alert('start: ' + view.start.time());
+          //   // alert('end: ' + view.end.time());
+          // },            
+          // resources: $localStorage.rooms
           //  [
           //   { id: 420, title: 'Room 420' },
           //   { id: 44, title: 'Room 44' },
@@ -303,7 +377,7 @@ angular.module('crudApp').factory('EventService',
           //   { id: 34, title: 'Room 34' },
           //   { id: 'd', title: 'Room D' }
           // ]         
-        });
+        // });
 
         // $('#calendar').fullCalendar( 'refetchEventSources', $localStorage.events );
         // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
