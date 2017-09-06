@@ -6,7 +6,9 @@ angular.module('crudApp').factory('EventService',
 
       var factory = {
         loadAllEvents: loadAllEvents,
+        loadAllRooms: loadAllRooms,
         getAllEvents: getAllEvents,
+        getAllRooms: getAllRooms,
         getEvent: getEvent,
         createEvent: createEvent,
         updateEvent: updateEvent,
@@ -22,7 +24,7 @@ angular.module('crudApp').factory('EventService',
           .then(
             function (response) {
               console.log('Fetched successfully all events');
-              $localStorage.events = prepareData(response.data);
+              $localStorage.events = prepareEvents(response.data);
               getAllEvents();
               deferred.resolve(response);
             },
@@ -34,7 +36,39 @@ angular.module('crudApp').factory('EventService',
         return deferred.promise;
       }
 
-      function prepareData(data) {
+      function loadAllRooms() {
+        console.log('Fetching all rooms');
+        var deferred = $q.defer();
+        $http.get(urls.ROOM_SERVICE_API)
+          .then(
+            function (response) {
+              console.log('Fetched successfully all rooms');
+              $localStorage.rooms = prepareRooms(response.data);
+              getAllRooms();
+              loadAllEvents();
+              deferred.resolve(response);
+            },
+            function (errResponse) {
+              console.error('Error while loading rooms');
+              deferred.reject(errResponse);
+            }
+          );
+        return deferred.promise;
+      }
+
+      function prepareRooms(data) {
+        var result = [];
+        for(var i = 0; i < data.length; i++) {
+          var item = data[i];
+          var room = {};
+          room.id = item.id;
+          room.title = item.name;
+          result.push(room);
+        }
+         return result;
+      }
+
+      function prepareEvents(data) {
         var result = [];
         for(var i = 0; i < data.length; i++) {
           var item = data[i];
@@ -49,6 +83,10 @@ angular.module('crudApp').factory('EventService',
          return result;
       }
 
+      function getAllRooms(){
+        return $localStorage.rooms;
+      }
+
       function getAllEvents(){
         $('#calendar').fullCalendar({
           schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
@@ -59,15 +97,7 @@ angular.module('crudApp').factory('EventService',
           maxTime: '18:00:00',
           slotDuration: '00:15:00',
           allDaySlot: false,
-          eventResizeStop: function( event, jsEvent, ui, view ) {            
-            // alert('Clicked on: ' + date.format());         
-            // alert('Clicked on: ' + event);
-            // alert('ui: ' + ui);
-            // alert('Event: ' + event.title);
-            // // alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-            // alert('View: ' + view.name);  
-            // var start = new Date("2017-09-03T12:30:00");
-            // var end = new Date("2017-09-03T13:45:00");
+          eventResizeStop: function( event, jsEvent, ui, view ) {   
             var diffMs = null;
             var diffMins = null;
             if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
@@ -110,50 +140,50 @@ angular.module('crudApp').factory('EventService',
             },
           ],
 
-          eventResize: function(event, delta, revertFunc) {
+          // eventResize: function(event, delta, revertFunc) {
             
-            // var diffMs = (event.end.time() - event.start.time());
-            var diffMs = null;
-            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-              var diffMs = (event.end.time() - event.start.time()) / 60000;
-            }
-            // var diffMs = (event.end.format() - event.start.format());
-            // alert(event.title + " end is now " + event.end.format());
-            // var endtime = event.end.format();            
+            // // var diffMs = (event.end.time() - event.start.time());
+            // var diffMs = null;
+            // if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+            //   var diffMs = (event.end.time() - event.start.time()) / 60000;
+            // }
+            // // var diffMs = (event.end.format() - event.start.format());
+            // // alert(event.title + " end is now " + event.end.format());
+            // // var endtime = event.end.format();            
             
-            var falsz = true;
+            // var falsz = true;
                            
 
-            if (diffMs !== null && diffMs > 120) {
-              if (confirm("is 120 okay rather than " + diffMs + "?")) {
-                // event.end = new Date(event.start + 120);
-                event.end = moment(new Date(event.start + (120 * 60000)));
-                event.rendering = 'background';
-                // new Date(tempDate.setHours(tempDate.getHours()+1)); 
+            // if (diffMs !== null && diffMs > 120) {
+            //   if (confirm("is 120 okay rather than " + diffMs + "?")) {
+            //     // event.end = new Date(event.start + 120);
+            //     event.end = moment(new Date(event.start + (120 * 60000)));
+            //     event.rendering = 'background';
+            //     // new Date(tempDate.setHours(tempDate.getHours()+1)); 
 
-                // $('#calendar').fullCalendar('updateEvent', event);
+            //     // $('#calendar').fullCalendar('updateEvent', event);
                 
-                falsz = true;
-                // revertFunc();
-                // $('#calendar').fullCalendar( 'refetchEventSources', eventSources );
+            //     falsz = true;
+            //     // revertFunc();
+            //     // $('#calendar').fullCalendar( 'refetchEventSources', eventSources );
 
-                updateEvent(event, event.id);
-                return;
-                $('#calendar').fullCalendar( 'rerenderEvents' );
-                $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
-                $('#calendar').fullCalendar( 'refetchEvents' );
-                // rerenderEvents();
-                falsz = true;                
-              } else {
-                revertFunc();
-              }              
-            }
+            //     updateEvent(event, event.id);
+            //     return;
+            //     // $('#calendar').fullCalendar( 'rerenderEvents' );
+            //     // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
+            //     // $('#calendar').fullCalendar( 'refetchEvents' );
+            //     // rerenderEvents();
+            //     falsz = true;                
+            //   } else {
+            //     revertFunc();
+            //   }              
+            // }
 
-            if (diffMs !== null) {
-              updateEvent(event, event.id);            
-            } 
-            // event
-          },
+            // if (diffMs !== null) {
+            //   updateEvent(event, event.id);            
+            // } 
+            // // event
+          // },
 
           eventRender: function( event, element, view ) {
             if(event.changing){ // If this event is being changed, grab its render date
@@ -177,6 +207,50 @@ angular.module('crudApp').factory('EventService',
           },
           eventOverlap: false,
           eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) { 
+
+            // var diffMs = (event.end.time() - event.start.time());
+            var diffMs = null;
+            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+              var diffMs = (event.end.time() - event.start.time()) / 60000;
+            }
+            // var diffMs = (event.end.format() - event.start.format());
+            // alert(event.title + " end is now " + event.end.format());
+            // var endtime = event.end.format();            
+            
+            var falsz = true;
+                          
+
+            if (diffMs !== null && diffMs > 120) {
+              if (confirm("is 120 okay rather than " + diffMs + "?")) {
+                // event.end = new Date(event.start + 120);
+                event.end = moment(new Date(event.start + (120 * 60000)));
+                event.rendering = 'background';
+                // new Date(tempDate.setHours(tempDate.getHours()+1)); 
+
+                // $('#calendar').fullCalendar('updateEvent', event);
+                
+                falsz = true;
+                // revertFunc();
+                // $('#calendar').fullCalendar( 'refetchEventSources', eventSources );
+
+                updateEvent(event, event.id);
+                return;
+                // $('#calendar').fullCalendar( 'rerenderEvents' );
+                // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
+                // $('#calendar').fullCalendar( 'refetchEvents' );
+                // rerenderEvents();
+                falsz = true;                
+              } else {
+                revertFunc();
+              }              
+            }
+
+            if (diffMs !== null) {
+              updateEvent(event, event.id);            
+            } 
+            // event
+
+
             event.changing = true; // Event is being changed
             
              if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
@@ -217,22 +291,22 @@ angular.module('crudApp').factory('EventService',
             // alert('View: ' + view.name);
             // alert('start: ' + view.start.time());
             // alert('end: ' + view.end.time());
-          },
-            
-          resources: [
-            { id: 420, title: 'Room 420' },
-            { id: 44, title: 'Room 44' },
-            { id: 55, title: 'Room 55' },
-            { id: 2, title: 'Room 2' },
-            { id: 34, title: 'Room 34' },
-            { id: 'd', title: 'Room D' }
-          ]         
+          },            
+          resources: $localStorage.rooms
+          //  [
+          //   { id: 420, title: 'Room 420' },
+          //   { id: 44, title: 'Room 44' },
+          //   { id: 55, title: 'Room 55' },
+          //   { id: 2, title: 'Room 2' },
+          //   { id: 34, title: 'Room 34' },
+          //   { id: 'd', title: 'Room D' }
+          // ]         
         });
 
         // $('#calendar').fullCalendar( 'refetchEventSources', $localStorage.events );
         // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
-        $('#calendar').fullCalendar( 'rerenderEvents' );
-        $('#calendar').fullCalendar( 'refetchEvents' );
+        // $('#calendar').fullCalendar( 'rerenderEvents' );
+        // $('#calendar').fullCalendar( 'refetchEvents' );
 
         // $localStorage.events = $('#calendar').fullCalendar.events;        
         // return $localStorage.events;

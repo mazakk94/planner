@@ -6,7 +6,7 @@ public class EventDto {
 	
 	SimpleDateFormat formatter = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
 	
-	private Long id;	
+	private Integer id;	
 	private String name;
 	private String start;
 	private String end;
@@ -29,11 +29,11 @@ public class EventDto {
 
 	private Integer room;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

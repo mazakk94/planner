@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.mazaq.planner.model.Event;
 
 @Repository
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, Integer> {
 
     Event findByName(String name);
 

@@ -9,7 +9,7 @@ import com.mazaq.planner.shared.EventDto;
 
 public interface EventService {
 	
-	Event findById(Long id);
+	Event findById(Integer id);
 
 	Event findByName(String name);
 
@@ -17,7 +17,7 @@ public interface EventService {
 
 	void updateEvent(Event event);
 
-	void deleteEventById(Long id);
+	void deleteEventById(Integer id);
 
 	void deleteAllEvents();
 

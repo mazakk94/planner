@@ -2,7 +2,7 @@ var app = angular.module('crudApp',['ui.router','ngStorage']);
 
 // app.constant('urls', {
 //     BASE: 'http://localhost:8080/PlannerApp',
-//     USER_SERVICE_API : 'http://localhost:8080/PlannerApp/api/user/',
+//     ROOM_SERVICE_API : 'http://localhost:8080/PlannerApp/api/room/',
 //     EVENT_SERVICE_API : 'http://localhost:8080/PlannerApp/api/event/'
 // });
 
@@ -29,8 +29,7 @@ app.config(['$stateProvider', '$urlRouterProvider',
         //             return deferred.promise;
         //         }
         //     }
-        // }) 
-
+        // })
         .state('events', {
             url: '/',
             templateUrl: 'partials/list',
@@ -39,8 +38,9 @@ app.config(['$stateProvider', '$urlRouterProvider',
             resolve: {
                 events: function ($q, EventService) {
                     console.log('Load all events');
-                    var deferred = $q.defer();
-                    EventService.loadAllEvents().then(deferred.resolve, deferred.resolve);
+                    var deferred = $q.defer();                    
+                    EventService.loadAllRooms().then(deferred.resolve, deferred.resolve);
+                    // EventService.loadAllEvents().then(deferred.resolve, deferred.resolve);
                     return deferred.promise;
                 }
             }

@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mazaq.planner.model.Event;
 import com.mazaq.planner.repositories.EventRepository;
+import com.mazaq.planner.repositories.RoomRepository;
 import com.mazaq.planner.shared.EventDto;
-
 
 
 @Service("eventService")
@@ -23,8 +23,10 @@ public class EventServiceImpl implements EventService{
 
 	@Autowired
 	private EventRepository eventRepository;
+	@Autowired
+	private RoomRepository roomRepository;
 
-	public Event findById(Long id) {
+	public Event findById(Integer id) {
 		return eventRepository.findOne(id);
 	}
 
@@ -38,9 +40,9 @@ public class EventServiceImpl implements EventService{
 
 	public void updateEvent(Event event){
 		saveEvent(event);
-	}	
+	}
 
-	public void deleteEventById(Long id){
+	public void deleteEventById(Integer id){
 		eventRepository.delete(id);
 	}
 
@@ -56,10 +58,18 @@ public class EventServiceImpl implements EventService{
 		return findByName(event.getName()) != null;
 	}
 
-	@Override
+//	@Override
+//	public Event updateEvent(Event currentEvent, EventDto eventDto) throws ParseException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
+
+@Override
 	public Event updateEvent(Event currentEvent, EventDto eventDto) throws ParseException {
-		currentEvent.setName(eventDto.getName());
-		currentEvent.setRoom(eventDto.getRoom());	
+		currentEvent.setName(eventDto.getName());		
+//		currentEvent.setRoom(roomRepository.findByName(eventDto.getRoom().toString()));	
+		currentEvent.setRoom(roomRepository.findOne(eventDto.getRoom()));
 				
 		String string = eventDto.getStart();			
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
@@ -73,6 +83,5 @@ public class EventServiceImpl implements EventService{
 //		format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
 		return currentEvent;
 	}	
-	
 
 }

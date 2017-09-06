@@ -29,7 +29,8 @@ public final class ConverterUtil {
 		eventDto.setStart(whenConverted);
 		eventDto.setEnd(toConverted);
 		eventDto.setName(event.getName());
-		eventDto.setRoom(event.getRoom());    	
+//		eventDto.setRoom(Integer.parseInt(event.getRoom().getName()));  
+		eventDto.setRoom(event.getRoom().getId());    	
     	
         return eventDto;
     }

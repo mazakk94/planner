@@ -14,29 +14,32 @@ public class Event implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@NotEmpty
 	@Column(name = "NAME", nullable = false)
 	private String name;
 
-	@Column(name = "LENGTH", nullable = false) //deprecated
-	private Integer length;
+	// @Column(name = "LENGTH", nullable = false) //deprecated
+	// private Integer length;
 
-	@Column(name="ROOM", nullable=false)
-	private Integer room;
-		
-	@Column(name="START_DATE", nullable=false)
+	// @Column(name="ROOM_ID", nullable=false)
+
+	@ManyToOne
+    @JoinColumn(name="ROOM_ID")
+	private Room room;
+
+	@Column(name = "START_DATE", nullable = false)
 	private Date start;
-	
-	@Column(name="END_DATE", nullable=false)
+
+	@Column(name = "END_DATE", nullable = false)
 	private Date end;
-	
-	public Long getId() {
+
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -48,21 +51,13 @@ public class Event implements Serializable {
 		this.name = name;
 	}
 
-	public Integer getLength() {
-		return length;
-	}
-
-	public void setLength(Integer length) {
-		this.length = length;
-	}
-
-	public Integer getRoom() {
-		return room;
-	}
-
-	public void setRoom(Integer room) {
-		this.room = room;
-	}
+	// public Integer getLength() {
+	// return length;
+	// }
+	//
+	// public void setLength(Integer length) {
+	// this.length = length;
+	// }
 
 	public Date getStart() {
 		return start;
@@ -80,41 +75,11 @@ public class Event implements Serializable {
 		this.end = end;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-
-//		Event user = (Event) o;
-
-		Object age = null;
-		// if (Double.compare(user.salary, salary) != 0) return false;
-		// if (id != null ? !id.equals(user.id) : user.id != null) return false;
-		// if (name != null ? !name.equals(user.name) : user.name != null)
-		// return false;
-		return age != null;// != null ? age.equals(user.age) : user.age == null;
+	public Room getRoom() {
+		return room;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = 0;
-		// long temp;
-		// result = id != null ? id.hashCode() : 0;
-		// result = 31 * result + (name != null ? name.hashCode() : 0);
-		// result = 31 * result + (age != null ? age.hashCode() : 0);
-		// temp = Double.doubleToLongBits(salary);
-		// result = 31 * result + (int) (temp ^ (temp >>> 32));
-		return result;
+	public void setRoom(Room room) {
+		this.room = room;
 	}
-
-	// @Override
-	// public String toString() {
-	// return "User [id=" + id + ", name=" + name + ", age=" + age
-	// + ", salary=" + salary + "]";
-	// }
-
-
-
 }
