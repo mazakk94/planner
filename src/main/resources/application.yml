@@ -23,7 +23,7 @@ spring:
   profiles: prod
 datasource:
   sampleapp:
-    url: jdbc:mysql://s50.hekko.net.pl:3306/eagmar_mazaq
+    url: jdbc:mysql://s50.hekko.pl:3306/eagmar_mazaq
     username: eagmar_root
     password: root
     driverClassName: com.mysql.jdbc.Driver
