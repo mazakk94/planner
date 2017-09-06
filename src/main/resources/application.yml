@@ -23,14 +23,14 @@ spring:
   profiles: prod
 datasource:
   sampleapp:   
-    url: jdbc:mysql://s50.hekko.net.pl:3306/eagmar_mazaq
-    username: eagmar_mazaq
-    password: root
-    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:postgresql://localhost:5432
+    username:
+    password:
+    driverClassName: org.postgresql.Driver
     defaultSchema:
     maxPoolSize: 20
     hibernate:
       hbm2ddl.method: update
       show_sql: true
       format_sql: true
-      dialect: org.hibernate.dialect.MySQLDialect
+      dialect: org.hibernate.dialect.PostgreSQLDialect
