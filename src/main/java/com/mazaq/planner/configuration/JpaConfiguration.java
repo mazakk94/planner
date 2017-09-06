@@ -23,9 +23,12 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
+import org.hibernate.dialect.PostgreSQLDialect;
+import java.sql.*;
+//import org.postgresql.Driver;
 import com.zaxxer.hikari.HikariDataSource;
 
+@SuppressWarnings("deprecation")
 @Configuration
 @EnableJpaRepositories(basePackages = "com.mazaq.planner.repositories",
 		entityManagerFactoryRef = "entityManagerFactory",
