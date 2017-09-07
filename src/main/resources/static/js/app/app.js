@@ -7,7 +7,7 @@ var app = angular.module('crudApp',['ui.router','ngStorage']);
 // });
 app.constant('urls', {
     BASE: 'http://powerful-brook-93779.herokuapp.com/PlannerApp',
-    USER_SERVICE_API : 'http://powerful-brook-93779.herokuapp.com/PlannerApp/api/user/',
+    ROOM_SERVICE_API : 'http://powerful-brook-93779.herokuapp.com/PlannerApp/api/room/',
     EVENT_SERVICE_API : 'http://powerful-brook-93779.herokuapp.com/PlannerApp/api/event/'
 });
 
