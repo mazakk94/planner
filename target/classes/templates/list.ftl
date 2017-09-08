@@ -79,6 +79,7 @@
 		      </thead>
 		      <tbody>
 		      <tr ng-repeat="u in ctrl.getAllEvents()">
+		      <#--  <tr ng-repeat="u in ctrl.events">					  -->
 		        <td>{{u.id}}</td>
 		        <td>{{u.title}}</td>
 		        <td>{{u.start}}</td>
@@ -86,7 +87,7 @@
 		        <td>{{u.length}}</td>
 		        <td>{{u.resourceId}}</td>
 		        <td><button type="button" ng-click="ctrl.editEvent(u.id)" class="btn btn-success custom-width">Edit</button></td>
-		        <td><button type="button" ng-click="ctrl.removeevent(u.id)" class="btn btn-danger custom-width">Remove</button></td>
+					  <td><button type="button" ng-click="ctrl.removeEvent(u.id)" class="btn btn-danger custom-width">Remove</button></td>
 		      </tr>
 		      </tbody>
 		    </table>		

@@ -97,49 +97,20 @@ public class RestApiController {
 																	// przetestowac
 	public ResponseEntity<?> createEvent(@RequestBody EventDto eventDto, UriComponentsBuilder ucBuilder)
 			throws ParseException {
-		logger.info("Creating Event : {}");// , event);
+		logger.info("Creating Event");
 
+		EventDto dto = new EventDto();
 		Event event = new Event();
 		if (eventDto != null) {
-			// long diff = eventDto.getTo().getTime() -
-			// eventDto.getFrom().getTime();
-			// int minutes = (int) TimeUnit.MILLISECONDS.toMinutes(diff);
-			// event.setLength(minutes);
-			event.setName(eventDto.getName());
-
-			// search for room
-			Room room = roomService.findByName(eventDto.getRoom().toString());
-			event.setRoom(room);
-
-			// 2017-09-03T12:30:00
-			// SimpleDateFormat sfdate = new SimpleDateFormat("yyyy-MM-dd
-			// HH:mm:ss a");
-			// Date date = new Date();
-
-			// final String OLD_FORMAT = "yyyy-MM-dd HH:mm:ss";
-			// final String NEW_FORMAT = "yyyy-MM-dd HH:mm:ss a";
-
-			String string = eventDto.getStart();
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-			Date whenConverted = format.parse(string);
-			string = eventDto.getEnd();
-			Date toConverted = format.parse(string);
-
-			event.setStart(whenConverted);
-			event.setEnd(toConverted);
+			event = prepareEvent(eventDto);
+			eventService.saveEvent(event);//
 		}
 
-		if (eventService.isEventExist(event)) {
-			logger.error("Unable to create. A Event with name {} already exist", event.getName());
-			return new ResponseEntity<>(
-					new CustomErrorType("Unable to create. A Event with name " + event.getName() + " already exist."),
-					HttpStatus.CONFLICT);
+		if (event != null && event.getId() != null) {
+			eventDto.setId(event.getId());
 		}
-		eventService.saveEvent(event);
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/api/event/{id}").buildAndExpand(event.getId()).toUri());
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
+		return new ResponseEntity<EventDto>(eventDto, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/event/{id}", method = RequestMethod.PUT)
@@ -159,8 +130,42 @@ public class RestApiController {
 		return new ResponseEntity<>("", HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/event/", method = RequestMethod.PUT)
+	public ResponseEntity<?> updateAllEvents(@RequestBody List<EventDto> eventDtos) throws ParseException {
+		logger.info("Updating Events");
+
+		for (EventDto eventDto : eventDtos) {
+			if (eventDto.getId() != null) {
+				Event currentEvent = eventService.findById(eventDto.getId());
+				eventService.updateEvent(currentEvent, eventDto);
+			} else {
+				Event event = new Event();
+				event = prepareEvent(eventDto);
+				eventService.saveEvent(event);
+			}
+		}
+		return new ResponseEntity<>("", HttpStatus.OK);
+	}
+
+	private Event prepareEvent(EventDto eventDto) throws ParseException {
+		Event event = new Event();
+
+		event.setName(eventDto.getName());
+		Room room = roomService.findById(eventDto.getRoom());
+		event.setRoom(room);
+		String string = eventDto.getStart();
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+		Date whenConverted = format.parse(string);
+		string = eventDto.getEnd();
+		Date toConverted = format.parse(string);
+
+		event.setStart(whenConverted);
+		event.setEnd(toConverted);
+		return event;
+	}
+
 	@RequestMapping(value = "/event/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteEvent(@PathVariable("id") Integer id) {
+	public ResponseEntity<?> deleteEvent(@PathVariable("id") Integer id) throws ParseException {
 		logger.info("Fetching & Deleting Event with id {}", id);
 
 		Event event = eventService.findById(id);
@@ -170,7 +175,13 @@ public class RestApiController {
 					HttpStatus.NOT_FOUND);
 		}
 		eventService.deleteEventById(id);
-		return new ResponseEntity<Event>(HttpStatus.NO_CONTENT); // TODO
+		List<Event> events = eventService.findAllEvents();
+		List<EventDto> response = new ArrayList<>();
+		for (Event e : events) {
+			EventDto eventDto = ConverterUtil.convert(e);
+			response.add(eventDto);
+		}
+		return new ResponseEntity<List<EventDto>>(response, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/event/", method = RequestMethod.DELETE)

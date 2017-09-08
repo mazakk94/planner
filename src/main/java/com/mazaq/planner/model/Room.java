@@ -1,10 +1,15 @@
 package com.mazaq.planner.model;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "APP_ROOM")
@@ -20,9 +25,6 @@ public class Room implements Serializable {
 	@Column(name = "NAME", nullable = false)
 	private String name;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy="room")
-	private List<Event> events;	
-
 	public String getName() {
 		return name;
 	}
@@ -30,22 +32,12 @@ public class Room implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public List<Event> getEvents() {
-		return events;
-	}
-
-	public void setEvents(List<Event> events) {
-		this.events = events;
-	}
-
+	
 	public Integer getId() {
 		return id;
 	}
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	
+	}	
 }

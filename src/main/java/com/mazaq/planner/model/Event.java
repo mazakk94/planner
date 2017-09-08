@@ -19,12 +19,7 @@ public class Event implements Serializable {
 	@NotEmpty
 	@Column(name = "NAME", nullable = false)
 	private String name;
-
-	// @Column(name = "LENGTH", nullable = false) //deprecated
-	// private Integer length;
-
-	// @Column(name="ROOM_ID", nullable=false)
-
+	
 	@ManyToOne
     @JoinColumn(name="ROOM_ID")
 	private Room room;
@@ -50,14 +45,6 @@ public class Event implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	// public Integer getLength() {
-	// return length;
-	// }
-	//
-	// public void setLength(Integer length) {
-	// this.length = length;
-	// }
 
 	public Date getStart() {
 		return start;

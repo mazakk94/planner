@@ -89,7 +89,8 @@ angular.module('crudApp').controller('EventController',
 
 
         function getAllEvents(){
-            return EventService.getAllEvents();
+            self.events = EventService.getAllEvents();
+            return self.events;
         }
 
         function editEvent(id) {
