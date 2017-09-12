@@ -35,10 +35,17 @@ angular.module('crudApp').factory('EventService',
         //   }
         // }
 
-        var array = $('#calendar').fullCalendar( 'clientEvents' );
 
-        $('#calendar').fullCalendar( 'removeEventSources');//, calEvent );
-        $('#calendar').fullCalendar( 'removeEventSources', array );
+        var array = $('#calendar').fullCalendar( 'clientEvents' );
+        
+        
+        var events = $localStorage.events;
+        $('#calendar').fullCalendar( 'removeEvents');
+        $('#calendar').fullCalendar( 'addEventSource', events); 
+        $('#calendar').fullCalendar( 'rerenderEvents');
+        
+        // $('#calendar').fullCalendar( 'removeEventSources');//, calEvent );
+        // $('#calendar').fullCalendar( 'removeEventSources', array );
         // for(var i=0; i<$localStorage.events.length; i++){
         //   var e = $localStorage.events[i];
         //   // $('#calendar').fullCalendar( 'addEventSource', e );
@@ -46,7 +53,7 @@ angular.module('crudApp').factory('EventService',
         //   $('#calendar').fullCalendar('renderEvent', e, true);
         // }
 
-        $('#calendar').fullCalendar( 'rerenderEvents');//, calEvent );
+        // $('#calendar').fullCalendar( 'rerenderEvents');//, calEvent );
         
 
         // $('#calendar').fullCalendar({ eventSources: [{
@@ -98,8 +105,8 @@ angular.module('crudApp').factory('EventService',
             function (response) {
               console.log('Fetched successfully all events');
               $localStorage.events = prepareEvents(response.data);
-              // refreshCalendar();
-              getAllEvents();
+              refreshCalendar();
+              // getAllEvents();
               deferred.resolve(response);
             },
             function (errResponse) {
@@ -370,7 +377,8 @@ angular.module('crudApp').factory('EventService',
       }
 
       function createOrUpdateEvent(event) {
-        if (event._id !== undefined){
+        // if (event._id === undefined){          
+        if (event._id !== undefined && (event.id === undefined || event.id === null)){
           event.id = getEventIdFromSelect(event._id);
         }
         if (event.id !== undefined) {
@@ -392,9 +400,10 @@ angular.module('crudApp').factory('EventService',
       }
 
       function getEventIdFromSelect(_id){
-        var events = $localStorage.events;
+        // var events = $localStorage.events;
+        var events = $('#calendar').fullCalendar( 'clientEvents' );        
         for (var i=0; i < events.length; i++) {
-            if (events[i].id === _id) {
+            if (events[i]._id === _id) {
                 return events[i].id;
             }
         }
@@ -533,7 +542,8 @@ angular.module('crudApp').factory('EventService',
               // $('#calendar').fullCalendar( 'updateEvents', response.data )
               // $('#calendar').fullCalendar( 'updateEvents', events );                     
               // $('#calendar').fullCalendar( 'refetchEventSources', events );
-              loadAllEvents();
+              // loadAllEvents();
+              refreshCalendar();
               deferred.resolve(response.data);
             },
             function (errResponse) {

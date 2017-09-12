@@ -99,7 +99,6 @@ public class RestApiController {
 			throws ParseException {
 		logger.info("Creating Event");
 
-		EventDto dto = new EventDto();
 		Event event = new Event();
 		if (eventDto != null) {
 			event = prepareEvent(eventDto);
