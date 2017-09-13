@@ -161,10 +161,7 @@ angular.module('crudApp').factory('EventService',
             function (response) {
               console.log('Fetched successfully all events');
               $localStorage.events = prepareEvents(response.data);
-              loadCalendar();
-              refreshCalendar();
-              // getAllEvents();
-              deferred.resolve(response);
+              deferred.resolve($localStorage.events);              
             },
             function (errResponse) {
               console.error('Error while loading events');
@@ -182,9 +179,7 @@ angular.module('crudApp').factory('EventService',
             function (response) {
               console.log('Fetched successfully all rooms');
               $localStorage.rooms = prepareRooms(response.data);
-              getAllRooms();
-              loadAllEvents();
-              deferred.resolve(response);
+              deferred.resolve($localStorage.rooms);
             },
             function (errResponse) {
               console.error('Error while loading rooms');

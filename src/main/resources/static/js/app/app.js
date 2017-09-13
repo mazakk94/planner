@@ -23,7 +23,6 @@ app.config(['$stateProvider', '$urlRouterProvider',
             resolve: {
                 events: function ($q, EventService, CalendarService) {
                     console.log('Load all events');
-                    EventService.loadAllEvents().then(CalendarService.foo());
                 }
             }
         });

@@ -117,8 +117,8 @@ angular.module('crudApp').factory('CalendarService',
             $('#calendar').fullCalendar( 'refetchEventSources', array );
             // updateAllEvents();
           }
-      
         });
+        return localStorageEvents;
       },
       // */
 

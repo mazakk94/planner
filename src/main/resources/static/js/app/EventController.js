@@ -7,6 +7,7 @@ angular.module('crudApp').controller('EventController',
     self.event = {};
     self.events = [];
 
+    self.init = init;
     self.submit = submit;
     self.getAllEvents = getAllEvents;
     self.createEvent = createEvent;
@@ -21,6 +22,29 @@ angular.module('crudApp').controller('EventController',
 
     self.onlyIntegers = /^\d+$/;
     self.onlyNumbers = /^\d+([,.]\d+)?$/;
+    init();
+
+    function init() {
+      console.log('gonna start here');  
+      Promise.resolve(EventService.loadAllRooms())
+        .then(function(rooms) {
+        console.log('gonna continue there');
+        return new Promise(function(resolve, reject) {
+          console.log(rooms);
+          EventService.loadAllEvents().then (function(events) {resolve(([events, rooms]))});
+        });
+      })
+      .then(function(array) {
+        var events = array[0];     
+        var rooms = array[1];     
+        Promise.resolve(CalendarService.loadCalendar(events, rooms))
+        .then(function(events) {
+          console.log('trying to refresh...: ' + events);
+          CalendarService.refreshCalendar(events);
+        });
+        console.log(array);
+      });
+    }    
 
     function submit() {
       console.log('Submitting');
