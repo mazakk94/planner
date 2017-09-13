@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('crudApp').controller('EventController',
-  ['EventService', '$scope',  function( EventService, $scope) {
+  ['EventService', '$scope', 'CalendarService' , function( EventService, $scope, CalendarService) {
 		
     var self = this;
     self.event = {};
-    self.events=[];
+    self.events = [];
 
     self.submit = submit;
     self.getAllEvents = getAllEvents;
@@ -53,7 +53,6 @@ angular.module('crudApp').controller('EventController',
         );
     }
 
-
     function updateEvent(event, id){
       console.log('About to update event');
       EventService.updateEvent(event, id)
@@ -72,7 +71,6 @@ angular.module('crudApp').controller('EventController',
           }
         );
     }
-
 
     function removeEvent(id){
       console.log('About to remove Event with id '+id);

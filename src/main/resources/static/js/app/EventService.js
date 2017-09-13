@@ -18,11 +18,11 @@ angular.module('crudApp').factory('EventService',
         createOrUpdateEvent: createOrUpdateEvent
       };
 
-      do {
-        setTimeout(function(){ 
-          loadAllEvents(); 
-        }, 500);
-      } while ($localStorage === undefined || $localStorage === null);
+      // do {
+      //   setTimeout(function(){ 
+      //     loadAllEvents(); 
+      //   }, 500);
+      // } while ($localStorage === undefined || $localStorage === null);
 
 
       return factory;
@@ -70,7 +70,7 @@ angular.module('crudApp').factory('EventService',
                 event.rendering = 'background';
                 createOrUpdateEvent(event);
                 return;
-              } else {
+              } else { //cancel
                 revertFunc();
               }
             } else if (diffMs !== null) {

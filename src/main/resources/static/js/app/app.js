@@ -21,12 +21,9 @@ app.config(['$stateProvider', '$urlRouterProvider',
             controller:'EventController',
             controllerAs:'ctrl',
             resolve: {
-                events: function ($q, EventService) {
+                events: function ($q, EventService, CalendarService) {
                     console.log('Load all events');
-                    var deferred = $q.defer();                    
-                    EventService.loadAllRooms().then(deferred.resolve, deferred.resolve);
-                    // EventService.loadAllEvents().then(deferred.resolve, deferred.resolve);
-                    return deferred.promise;
+                    EventService.loadAllEvents().then(CalendarService.foo());
                 }
             }
         });
