@@ -25,26 +25,31 @@ angular.module('crudApp').controller('EventController',
     init();
 
     function init() {
-      console.log('gonna start here');  
+
+      console.log('gonna start here');
       Promise.resolve(EventService.loadAllRooms())
-        .then(function(rooms) {
-        console.log('gonna continue there');
-        return new Promise(function(resolve, reject) {
-          console.log(rooms);
-          EventService.loadAllEvents().then (function(events) {resolve(([events, rooms]))});
-        });
-      })
-      .then(function(array) {
-        var events = array[0];     
-        var rooms = array[1];     
-        Promise.resolve(CalendarService.loadCalendar(events, rooms))
-        .then(function(events) {
-          console.log('trying to refresh...: ' + events);
-          CalendarService.refreshCalendar(events);
-        });
-        console.log(array);
+        .then(function(rooms){ promiseRooms(rooms)
+          .then(function(array) {
+            var events = array[0];     
+            var rooms = array[1];     
+            Promise.resolve(CalendarService.loadCalendar(events, rooms))
+            .then(function(events) {
+              console.log('trying to refresh...: ' + events);
+              CalendarService.refreshCalendar(events);
+            });
+            console.log(array);
+          });
+        });     
+    }
+    
+    function promiseRooms(rooms) {
+      console.log('gonna continue there');
+      return new Promise(function(resolve, reject) {
+        console.log(rooms);
+        Promise.resolve(EventService.loadAllEvents()).then (function(events) {resolve(([events, rooms]))});        
+        // EventService.loadAllEvents().then (function(events) {resolve(([events, rooms]))});
       });
-    }    
+    }
 
     function submit() {
       console.log('Submitting');
