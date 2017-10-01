@@ -37,8 +37,7 @@ angular.module('crudApp').controller('EventController',
       console.log('gonna continue there');
       return new Promise(function(resolve, reject) {
         console.log(rooms);
-        Promise.resolve(EventService.loadAllEvents()).then (function(events) {resolve(([events, rooms]))});        
-        // EventService.loadAllEvents().then (function(events) {resolve(([events, rooms]))});
+        Promise.resolve(EventService.loadAllEvents()).then (function(events) {resolve(([events, rooms]))});  
       });
     }
 
@@ -64,16 +63,19 @@ angular.module('crudApp').controller('EventController',
       }
     }
 
-    function createEvent(event) {
+    function createEvent(event) { //only service function is called from calendar
       console.log('About to create event');
       EventService.createEvent(event)
         .then(
           function (response) {
+            
+            Promise.resolve(EventService.loadAllEvents()).then (
+              function(events) {
+                CalendarService.refreshCalendar();
+              });  
+
+            // CalendarService.refreshCalendar();
             console.log('Event created successfully');
-            self.successMessage = 'Event created successfully';
-            self.errorMessage='';
-            self.done = true;
-            self.event={};
             $scope.myForm.$setPristine();
           },
           function (errResponse) {
@@ -107,7 +109,10 @@ angular.module('crudApp').controller('EventController',
       console.log('About to remove Event with id '+id);
       EventService.removeEvent(id)
         .then(
-          function(){
+          function(responseEvents){
+            var events = [];
+            events = EventService.prepareEvents(responseEvents);            
+            CalendarService.refreshCalendar(events);
             console.log('Event '+id + ' removed successfully');
           },
           function(errResponse){

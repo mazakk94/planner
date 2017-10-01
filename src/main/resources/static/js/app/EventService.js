@@ -9,21 +9,16 @@ angular.module('crudApp').factory('EventService',
         loadAllRooms: loadAllRooms,
         getAllEvents: getAllEvents,
         getAllRooms: getAllRooms,
+        prepareEvents: prepareEvents,
         getEvent: getEvent,
         createEvent: createEvent,
         updateEvent: updateEvent,
         removeEvent: removeEvent,
         updateAllEvents: updateAllEvents,
         loadCalendar: loadCalendar,
-        createOrUpdateEvent: createOrUpdateEvent
+        createOrUpdateEvent: createOrUpdateEvent,
+        getEventIdFromSelect: getEventIdFromSelect
       };
-
-      // do {
-      //   setTimeout(function(){ 
-      //     loadAllEvents(); 
-      //   }, 500);
-      // } while ($localStorage === undefined || $localStorage === null);
-
 
       return factory;
 
@@ -341,7 +336,9 @@ angular.module('crudApp').factory('EventService',
               var eventDto = response.data;
               event = prepareEvent(eventDto);                
               $('#calendar').fullCalendar('updateEvent', event);
-              loadAllEvents();
+              // loadAllEvents();
+              // refreshCalendar(); 
+              // CalendarService.refreshCalendar(); //TODO service
               deferred.resolve(response.data);
             },
             function (errResponse) {
@@ -389,16 +386,7 @@ angular.module('crudApp').factory('EventService',
         $http.delete(urls.EVENT_SERVICE_API + id)
           .then(
             function (response) {
-              $('#calendar').fullCalendar( 'removeEventSources' );
               $localStorage.events = prepareEvents(response.data); 
-              var events = [];
-              events = $localStorage.events;     
-              for(var i=0; i<events.length; i++){
-                $('#calendar').fullCalendar( 'addEventSource', events[i] );               
-              }
-
-              $('#calendar').fullCalendar( 'rerenderEvents');
-              refreshCalendar();
               deferred.resolve(response.data);
             },
             function (errResponse) {

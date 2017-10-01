@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('crudApp').factory('CalendarService', 
-['$localStorage', '$http', '$q', 'urls',
-  function ($localStorage, $http, $q, urls) {
+['$localStorage', '$http', '$q', 'urls', 'EventService',
+  function ($localStorage, $http, $q, urls, EventService) {
       // function () {
 
     return {
@@ -41,7 +41,7 @@ angular.module('crudApp').factory('CalendarService',
           ],  
           eventOverlap: false,
           eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) {
-            event.id = getEventIdFromSelect(event._id);
+            event.id = EventService.getEventIdFromSelect(event._id);
             var diffMs = null;
             if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
               var diffMs = (event.end.time() - event.start.time()) / 60000;
@@ -51,14 +51,14 @@ angular.module('crudApp').factory('CalendarService',
               if (confirm("is 120 okay rather than " + diffMs + "?")) {
                 event.end = moment(new Date(event.start + (120 * 60000)));
                 event.rendering = 'background';
-                createOrUpdateEvent(event);
+                EventService.createOrUpdateEvent(event);
                 return;
               } else {
-                callRevert(revertFunc);
-                // revertFunc();
+                // callRevert(revertFunc);
+                revertFunc();
               }
             } else if (diffMs !== null) {
-              createOrUpdateEvent(event);
+              EventService.createOrUpdateEvent(event);
             }
             
             if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
@@ -70,7 +70,7 @@ angular.module('crudApp').factory('CalendarService',
             }
           },
           eventDrop: function( event, delta, revertFunc, jsEvent, ui, view ) {
-            createOrUpdateEvent(event);
+            EventService.createOrUpdateEvent(event);
           },
           dayClick: function(date, jsEvent, view, resourceObj) {   
             date.format();
@@ -108,9 +108,14 @@ angular.module('crudApp').factory('CalendarService',
             var title = "test";
             var event = { title: title, start: start, end: end, resourceId: resource.id };
             if (title) {
-              $('#calendar').fullCalendar('renderEvent', event, true);
-              createEvent(event);
+              $('#calendar').fullCalendar('renderEvent', event, true);              
+              Promise.resolve(EventService.createEvent(event)).then (
+                function(events) {
+                  refreshCalendar(); //TODO
+                });
             }
+
+            //TODO check if necessary below
             $('#calendar').fullCalendar('unselect');
             var array = [];
             array = $('#calendar').fullCalendar( 'clientEvents' );  
@@ -121,6 +126,14 @@ angular.module('crudApp').factory('CalendarService',
         return localStorageEvents;
       },
       // */
+
+      // function refreshCalendar() {
+      //   var array = $('#calendar').fullCalendar( 'clientEvents' );
+      //   var events = localStorageEvents;
+      //   $('#calendar').fullCalendar( 'removeEvents');
+      //   $('#calendar').fullCalendar( 'addEventSource', events); 
+      //   $('#calendar').fullCalendar( 'rerenderEvents');        
+      // },
 
       refreshCalendar: function(localStorageEvents) {
         var array = $('#calendar').fullCalendar( 'clientEvents' );
