@@ -286,7 +286,7 @@ angular.module('crudApp').factory('EventService',
         return null;
       }
 
-      function updateAllEvents() {
+      function updateAllEvents() { //not checked
         var events = $('#calendar').fullCalendar( 'clientEvents' );
         var eventDtos = [];
         for (var i=0; i<events.length; i++) {
@@ -332,7 +332,7 @@ angular.module('crudApp').factory('EventService',
         var deferred = $q.defer();
         $http.post(urls.EVENT_SERVICE_API, eventDto)
           .then(
-            function (response) {              
+            function (response) {
               var eventDto = response.data;
               event = prepareEvent(eventDto);                
               $('#calendar').fullCalendar('updateEvent', event);
