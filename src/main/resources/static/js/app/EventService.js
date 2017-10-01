@@ -9,85 +9,143 @@ angular.module('crudApp').factory('EventService',
         loadAllRooms: loadAllRooms,
         getAllEvents: getAllEvents,
         getAllRooms: getAllRooms,
+        prepareEvents: prepareEvents,
         getEvent: getEvent,
         createEvent: createEvent,
         updateEvent: updateEvent,
         removeEvent: removeEvent,
         updateAllEvents: updateAllEvents,
-        createOrUpdateEvent: createOrUpdateEvent
+        loadCalendar: loadCalendar,
+        createOrUpdateEvent: createOrUpdateEvent,
+        getEventIdFromSelect: getEventIdFromSelect
       };
 
       return factory;
 
+      function loadCalendar(){
+        $('#calendar').fullCalendar({
+          schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+          defaultView: 'agendaDay',
+          minTime: '08:00:00',
+          maxTime: '18:00:00',
+          slotDuration: '00:15:00',
+          allDaySlot: false,
+          eventResizeStop: function( event, jsEvent, ui, view ) {   
+            var diffMs = null;
+            var diffMins = null;
+            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+              diffMs = (event.end.time() - event.start.time());
+              diffMins = Math.round((diffMs % 86400000) / 60000); // minutes
+            }
+          },
+          eventSources: [
+            {
+              events : $localStorage.events,
+              color: '#3399ff',
+              editable: true
+            },
+          ],
+          eventRender: function( event, element, view ) {
+            if(event.changing){ // If this event is being changed, grab its render date
+              $("#currenttime").html("Start: "+event.start.format("YYYY-MM-DD hh:mma")+"<br> End: "+event.end.format("YYYY-MM-DD hh:mma"));
+              // alert('event length: ' + (event.start - event.end).format("YYYY-MM-DD hh:mma"));
+            }
+          },        
+          eventOverlap: false,
+          eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) {
+            event.id = getEventIdFromSelect(event._id);
+            var diffMs = null;
+            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+              var diffMs = (event.end.time() - event.start.time()) / 60000;
+            }                         
+
+            if (diffMs !== null && diffMs > 120) {
+              if (confirm("is 120 okay rather than " + diffMs + "?")) {
+                event.end = moment(new Date(event.start + (120 * 60000)));
+                event.rendering = 'background';
+                createOrUpdateEvent(event);
+                return;
+              } else { //cancel
+                revertFunc();
+              }
+            } else if (diffMs !== null) {
+              createOrUpdateEvent(event);
+            }
+
+            event.changing = true;
+            
+            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
+              var millisDuration = event.end.time() - event.start.time();            
+              var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
+              if (minutesDuration > 120) {
+                revertFunc();
+              }
+            }
+          },
+          eventResizeEnd: function(event, jsEvent, ui, view ){
+            event.changing = false; // Event is finished being changed
+            
+            var millisDuration = event.end.time() - event.start.time();            
+            var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
+            var falsz = true;
+          },
+          eventDrop: function( event, delta, revertFunc, jsEvent, ui, view ) {
+            createOrUpdateEvent(event);
+          },
+          dayClick: function(date, jsEvent, view, resourceObj) {   
+            date.format();
+            var prawda = false;
+          },
+
+          eventClick: function(calEvent, jsEvent, view) {
+            var event = {};
+            event.title = 'item.name';
+            event.start = view.start.time();
+            event.end = view.end.time();
+            event.resourceId = calEvent.resourceId;
+            
+            $('#calendar').fullCalendar( 'addEventSource', event );
+            var array = [];
+            array = $('#calendar').fullCalendar( 'clientEvents' );            
+            var prawda = false;
+          },            
+          resources: $localStorage.rooms,
+
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+          },
+          editable: true,
+          eventLimit: true, // allow "more" link when too many events
+          defaultView: 'agendaDay',
+          selectable: true, //permite sa selectezi mai multe zile
+          selectHelper: true, //coloreaza selctia ta
+
+          select: function(start, end, jsEvent, view, resource ) {          
+            // select: function(start, end, allDay) {            
+            var title = "test";
+            var event = { title: title, start: start, end: end, resourceId: resource.id };
+            if (title) {
+              $('#calendar').fullCalendar('renderEvent', event, true);
+              createEvent(event);
+            }
+            $('#calendar').fullCalendar('unselect');
+            var array = [];
+            array = $('#calendar').fullCalendar( 'clientEvents' );  
+            $('#calendar').fullCalendar( 'refetchEventSources', array );
+            // updateAllEvents();
+          }
+      
+        });
+      }
+
       function refreshCalendar() {
-        // var array = [];
-        // array = $('#calendar').fullCalendar( 'clientEvents' );
-        // $('#calendar').fullCalendar( 'removeEventSources');//, calEvent );
-          
-        
-        // $('#calendar').fullCalendar( 'updateEvents', array );              
-        // $('#calendar').fullCalendar( 'refetchEventSources', array );
-
-        // for (var i=0; i<array.length; i++){
-        //   var event = array[i];
-        //   if (event.id === undefined){
-        //     event.id = getEventIdFromSelect(event._id);
-        //   }
-        // }
-
         var array = $('#calendar').fullCalendar( 'clientEvents' );
-
-        $('#calendar').fullCalendar( 'removeEventSources');//, calEvent );
-        $('#calendar').fullCalendar( 'removeEventSources', array );
-        // for(var i=0; i<$localStorage.events.length; i++){
-        //   var e = $localStorage.events[i];
-        //   // $('#calendar').fullCalendar( 'addEventSource', e );
-        //   // $('#calendar').fullCalendar('updateEvent', e);
-        //   $('#calendar').fullCalendar('renderEvent', e, true);
-        // }
-
-        $('#calendar').fullCalendar( 'rerenderEvents');//, calEvent );
-        
-
-        // $('#calendar').fullCalendar({ eventSources: [{
-        //       events : $localStorage.events,
-        //       color: '#3399ff',
-        //       editable: true
-        //     },
-        //   ],
-        // });
-
-        // $('#calendar').fullCalendar( 'updateEvents', $localStorage.events ); 
-       
-
-        // var array = [];
-        // array = $('#calendar').fullCalendar( 'clientEvents' );
-        // $('#calendar').fullCalendar( 'removeEventSources');//, calEvent );          
-                     
-        // $('#calendar').fullCalendar( 'refetchEventSources', array );
-        // for (var i=0; i<array.length; i++){
-        //   var event = array[i];
-        //   if (event.id === undefined){
-        //     array[i].id = getEventIdFromSelect(event._id);
-        //   }
-        // }
-
-        // $('#calendar').fullCalendar( 'updateEvents', array ); 
-        // //$localStorage.events = array;
-        // $('#calendar').fullCalendar({
-        //   eventSources: [
-        //           {
-        //             events : $localStorage.events,
-        //             color: '#3399ff',
-        //             editable: true
-        //           },
-        //         ],
-        //       });
-        // var events = response.data;
-        // $localStorage.events = events;
-        // // $('#calendar').fullCalendar( 'updateEvents', response.data )
-        // $('#calendar').fullCalendar( 'updateEvents', events );              
-        // $('#calendar').fullCalendar( 'refetchEventSources', events );
+        var events = $localStorage.events;
+        $('#calendar').fullCalendar( 'removeEvents');
+        $('#calendar').fullCalendar( 'addEventSource', events); 
+        $('#calendar').fullCalendar( 'rerenderEvents');        
       }
 
       function loadAllEvents() {
@@ -98,9 +156,7 @@ angular.module('crudApp').factory('EventService',
             function (response) {
               console.log('Fetched successfully all events');
               $localStorage.events = prepareEvents(response.data);
-              // refreshCalendar();
-              getAllEvents();
-              deferred.resolve(response);
+              deferred.resolve($localStorage.events);              
             },
             function (errResponse) {
               console.error('Error while loading events');
@@ -118,9 +174,7 @@ angular.module('crudApp').factory('EventService',
             function (response) {
               console.log('Fetched successfully all rooms');
               $localStorage.rooms = prepareRooms(response.data);
-              getAllRooms();
-              loadAllEvents();
-              deferred.resolve(response);
+              deferred.resolve($localStorage.rooms);
             },
             function (errResponse) {
               console.error('Error while loading rooms');
@@ -158,11 +212,6 @@ angular.module('crudApp').factory('EventService',
           var item = data[i];
           var event = {};
           event = prepareEvent(item);
-          // event.id = item.id;
-          // event.title = item.name;
-          // event.start = item.start;
-          // event.end = item.end;
-          // event.resourceId = item.room;
           result.push(event);
         }
          return result;
@@ -173,164 +222,6 @@ angular.module('crudApp').factory('EventService',
       }
 
       function getAllEvents(){
-        $('#calendar').fullCalendar({
-          schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
-          defaultView: 'agendaDay',
-          minTime: '08:00:00',
-          maxTime: '18:00:00',
-          slotDuration: '00:15:00',
-          allDaySlot: false,
-          eventResizeStop: function( event, jsEvent, ui, view ) {   
-            var diffMs = null;
-            var diffMins = null;
-            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-              diffMs = (event.end.time() - event.start.time());
-              diffMins = Math.round((diffMs % 86400000) / 60000); // minutes
-            }
-          },
-          eventSources: [
-            {
-              events : $localStorage.events,
-              color: '#3399ff',
-              editable: true
-            },
-          ],
-          eventRender: function( event, element, view ) {
-            if(event.changing){ // If this event is being changed, grab its render date
-              $("#currenttime").html("Start: "+event.start.format("YYYY-MM-DD hh:mma")+"<br> End: "+event.end.format("YYYY-MM-DD hh:mma"));
-              // alert('event length: ' + (event.start - event.end).format("YYYY-MM-DD hh:mma"));
-            }
-          },
-          eventResizeStart: function(event, jsEvent, ui, view ){
-            // alert('event end: ' + event.end.format("YYYY-MM-DD hh:mma"));
-            event.changing = true; // Event is being changed
-             
-            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-              var millisDuration = event.end.time() - event.start.time();            
-              var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
-              if (minutesDuration > 120) {
-                revertFunc();
-              }
-            }
-          
-            var falsz = true;
-          },
-          eventOverlap: false,
-          eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) { 
-
-            event.id = getEventIdFromSelect(event._id);
-
-            var diffMs = null;
-            if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-              var diffMs = (event.end.time() - event.start.time()) / 60000;
-            }                         
-
-            if (diffMs !== null && diffMs > 120) {
-              if (confirm("is 120 okay rather than " + diffMs + "?")) {
-                event.end = moment(new Date(event.start + (120 * 60000)));
-                event.rendering = 'background';
-                createOrUpdateEvent(event);
-                return;
-              } else {
-                revertFunc();
-              }
-            }
-
-            if (diffMs !== null) {
-              createOrUpdateEvent(event);
-            }
-
-            event.changing = true;
-            
-             if (event.end !== undefined && event.end !== null && event.start !== undefined && event.start !== null) {
-               var millisDuration = event.end.time() - event.start.time();            
-               var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
-               if (minutesDuration > 120) {
-                 revertFunc();
-               }
-             }
-          },
-          eventResizeEnd: function(event, jsEvent, ui, view ){
-            event.changing = false; // Event is finished being changed
-            
-            var millisDuration = event.end.time() - event.start.time();            
-            var minutesDuration = Math.round((millisDuration % 86400000) / 60000); // minutes
-            var falsz = true;
-          },
-          eventDrop: function( event, delta, revertFunc, jsEvent, ui, view ) {
-            createOrUpdateEvent(event);
-          },
-          // eventDragStart: function(event, jsEvent, ui, view ){
-          //   event.changing = true;
-          // },
-          // eventDragEnd: function(event, jsEvent, ui, view ){
-          //   event.changing = false;
-          // },
-
-          dayClick: function(date, jsEvent, view, resourceObj) {            
-            // alert('Clicked on: ' + date.format());         
-            // alert('Clicked on: ' + date.format());
-            // alert('Current view: ' + view.name);
-            // alert('ROOM: ' + resourceObj.id);
-            date.format();
-            var prawda = false;
-          },
-
-          eventClick: function(calEvent, jsEvent, view) {
-            // alert('Event: ' + calEvent.title);
-            // alert('View: ' + view.name);
-            // .fullCalendar( 'refetchEventSources', sources )
-            var event = {};
-            // event.id = 99;
-            event.title = 'item.name';
-            event.start = view.start.time();
-            event.end = view.end.time();
-            event.resourceId = calEvent.resourceId;
-            
-            $('#calendar').fullCalendar( 'addEventSource', event );
-            var array = [];
-            array = $('#calendar').fullCalendar( 'clientEvents' );            
-            var prawda = false;
-          },            
-          resources: $localStorage.rooms,
-
-          header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay'
-          },
-          editable: true,
-          eventLimit: true, // allow "more" link when too many events
-          defaultView: 'agendaDay',
-          selectable: true, //permite sa selectezi mai multe zile
-          selectHelper: true, //coloreaza selctia ta
-
-          select: function(start, end, jsEvent, view, resource ) {          
-            // select: function(start, end, allDay) {            
-            var title = "test";
-            var event = { title: title, start: start, end: end, resourceId: resource.id };
-            if (title) {
-              $('#calendar').fullCalendar('renderEvent', event, true);
-              createEvent(event);
-            }
-
-            // if (title) {
-            //   $('#calendar').fullCalendar('renderEvent', {
-            //       title: title,
-            //       start: start,
-            //       end: end,
-            //       resourceId: resource.id
-            //     },      
-            //     true
-            //   );
-            // }
-            $('#calendar').fullCalendar('unselect');
-            var array = [];
-            array = $('#calendar').fullCalendar( 'clientEvents' );  
-            $('#calendar').fullCalendar( 'refetchEventSources', array );
-            // updateAllEvents();
-          }
-        });
 
         $("#edit").click(function(e) {
           e.preventDefault();
@@ -358,19 +249,12 @@ angular.module('crudApp').factory('EventService',
           $(".cont").show();
         });
 
-        // $('#calendar').fullCalendar( 'refetchEventSources', $localStorage.events );
-        // $('#calendar').fullCalendar( 'refresh');// $localStorage.events );
-        // $('#calendar').fullCalendar( 'rerenderEvents' );
-        
-        // $localStorage.events = $('#calendar').fullCalendar( 'clientEvents' );
-        // $('#calendar').fullCalendar( 'refetchEventSources', $localStorage.events );
-        // return $localStorage.events;
-        // updateAllEvents();
         return $localStorage.events;
       }
 
       function createOrUpdateEvent(event) {
-        if (event._id !== undefined){
+        // if (event._id === undefined){          
+        if (event._id !== undefined && (event.id === undefined || event.id === null)){
           event.id = getEventIdFromSelect(event._id);
         }
         if (event.id !== undefined) {
@@ -392,16 +276,17 @@ angular.module('crudApp').factory('EventService',
       }
 
       function getEventIdFromSelect(_id){
-        var events = $localStorage.events;
+        // var events = $localStorage.events;
+        var events = $('#calendar').fullCalendar( 'clientEvents' );        
         for (var i=0; i < events.length; i++) {
-            if (events[i].id === _id) {
+            if (events[i]._id === _id) {
                 return events[i].id;
             }
         }
         return null;
       }
 
-      function updateAllEvents() {
+      function updateAllEvents() { //not checked
         var events = $('#calendar').fullCalendar( 'clientEvents' );
         var eventDtos = [];
         for (var i=0; i<events.length; i++) {
@@ -440,48 +325,29 @@ angular.module('crudApp').factory('EventService',
         return deferred.promise;
       }
 
-      // function createEvent(event) {
-        function createEvent(event) {
-          var eventDto = {};
-          eventDto = prepareDto(event);
-          console.log('Creating Event');
-          var deferred = $q.defer();
-          $http.post(urls.EVENT_SERVICE_API, eventDto)
-            .then(
-              function (response) {
-                
-                var eventDto = response.data;
-                event = prepareEvent(eventDto);                
-                $('#calendar').fullCalendar('updateEvent', event);
-                loadAllEvents();
-                deferred.resolve(response.data);
-              },
-              function (errResponse) {
-                 console.error('Error while creating Event : '+errResponse.data.errorMessage);
-                 deferred.reject(errResponse);
-              }
-            );
-          return deferred.promise;
-        }
-        //   var eventDto = {};
-        // eventDto = prepareDto(event);
-        // console.log('Creating Event');
-        // var deferred = $q.defer();
-        // $http.post(urls.EVENT_SERVICE_API, eventDto)
-        //   .then(
-        //     function (response) {
-        //       var event = response.data;
-        //       $('#calendar').fullCalendar('updateEvent', event);
-        //       loadAllEvents();
-        //       deferred.resolve(response.data);
-        //     },
-        //     function (errResponse) {
-        //        console.error('Error while creating Event : '+errResponse.data.errorMessage);
-        //        deferred.reject(errResponse);
-        //     }
-        //   );
-        // return deferred.promise;
-      // }
+      function createEvent(event) {
+        var eventDto = {};
+        eventDto = prepareDto(event);
+        console.log('Creating Event');
+        var deferred = $q.defer();
+        $http.post(urls.EVENT_SERVICE_API, eventDto)
+          .then(
+            function (response) {
+              var eventDto = response.data;
+              event = prepareEvent(eventDto);                
+              $('#calendar').fullCalendar('updateEvent', event);
+              // loadAllEvents();
+              // refreshCalendar(); 
+              // CalendarService.refreshCalendar(); //TODO service
+              deferred.resolve(response.data);
+            },
+            function (errResponse) {
+                console.error('Error while creating Event : '+errResponse.data.errorMessage);
+                deferred.reject(errResponse);
+            }
+          );
+        return deferred.promise;
+      }       
 
       function prepareDto(event) {
         var eventDto = {};
@@ -520,20 +386,7 @@ angular.module('crudApp').factory('EventService',
         $http.delete(urls.EVENT_SERVICE_API + id)
           .then(
             function (response) {
-              $('#calendar').fullCalendar( 'removeEventSources' );
               $localStorage.events = prepareEvents(response.data); 
-              var events = [];
-              events = $localStorage.events;     
-              for(var i=0; i<events.length; i++){
-                $('#calendar').fullCalendar( 'addEventSource', events[i] );  
-              }
-
-              $('#calendar').fullCalendar( 'rerenderEvents');
-              
-              // $('#calendar').fullCalendar( 'updateEvents', response.data )
-              // $('#calendar').fullCalendar( 'updateEvents', events );                     
-              // $('#calendar').fullCalendar( 'refetchEventSources', events );
-              loadAllEvents();
               deferred.resolve(response.data);
             },
             function (errResponse) {
